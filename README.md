@@ -4,6 +4,8 @@
 
 The image `yanfuou2/senior-design:chipyard-v1` has Chipyard and the `riscv-tools` toolchain installed under `/opt/chipyard`. An interactive shell sources `/opt/chipyard/env.sh`, which activates that environment.
 
+[Docker Hub Registry Link](https://hub.docker.com/r/yanfuou2/senior-design/tags)
+
 Pull the image:
 
 ```bash
@@ -18,19 +20,46 @@ docker run -it --ulimit nofile=1048576:1048576 --rm yanfuou2/senior-design:chipy
 
 ## Validate the toolchain
 
-Inside the container, confirm the RISC-V toolchain and CIRCT are on `PATH`:
+Inside the container, confirm the RISC-V toolchain and CIRCT are on `PATH` by running the following commands:
 
+Command:
 ```bash
 echo "$RISCV"
-riscv64-unknown-elf-gcc --version
-firtool --version
+```
+Expected results:
+```bash
+(/opt/chipyard/.conda-env) root@0149e7e3108e:/opt/chipyard# echo "$RISCV"
+/opt/chipyard/.conda-env/riscv-tools
 ```
 
-`$RISCV` should be `/opt/chipyard/.conda-env/riscv-tools`. Both version commands should print a version.
+Command:
+```bash
+riscv64-unknown-elf-gcc --version
+```
+Expected results:
+```
+riscv64-unknown-elf-gcc (g6afcc4f6d-dirty) 16.1.0
+Copyright (C) 2026 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+```
+
+Command:
+```bash
+firtool --version
+```
+Expected results:
+```
+(/opt/chipyard/.conda-env) root@0149e7e3108e:/opt/chipyard# firtool --version
+LLVM (http://llvm.org/):
+  LLVM version 19.0.0git
+  Optimized build.
+CIRCT firtool-1.75.0
+```
 
 ## Validate simulation
 
-Build the default Verilator simulator (`RocketConfig`) and run a RISC-V instruction test. Elaboration needs about 6.5 GB of RAM. This follows the [Chipyard Verilator instructions](https://chipyard.readthedocs.io/en/latest/simulation/software-rtl-simulation/).
+Run the following [Chipyard Verilator](https://chipyard.readthedocs.io/en/latest/simulation/software-rtl-simulation/) using the following commands:
 
 ```bash
 cd /opt/chipyard/sims/verilator
