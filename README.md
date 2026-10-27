@@ -15,7 +15,7 @@ docker pull yanfuou2/senior-design:chipyard-v1
 Start a shell. The open-file limit is required by the Verilator build.
 
 ```bash
-docker run -it --ulimit nofile=1048576:1048576 --rm yanfuou2/senior-design:chipyard-v1
+docker run -it --ulimit nofile=1048576:1048576 yanfuou2/senior-design:chipyard-v1
 ```
 
 ## Validate the toolchain
