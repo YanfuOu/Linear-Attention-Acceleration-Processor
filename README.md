@@ -1,5 +1,39 @@
 # Linear-Attention-Acceleration-Processor
 
+# Workflow V2 - Running LARP Container Using docker compose 
+Goal: Automate the manual docker volume attatchment and docker runs with docker compse! Additionally, all the docker file copying from the volume mountshould be automated. Docker container should persist created files after exit and present after resuming. Everything should be setup using command in Step 1 and ready to go by running command in Step 2. 
+
+Step 1: Create the LARP container defined in the docker-compose.yml file, but it does not start it. You should only need to run step 1 once to set everything up. 
+```bash
+docker compose create
+```
+After running the command, you should see terminal confirmation showing " ✔ Container linear-attention-acceleration-processor-chipyard-1 Created " 
+
+Step 2: Wake up the created/stopped container and immediately drops you back into its interactive terminal session. After exiting the container, you can rerun this command to reuse your stopped container. The files you have created in your container <em>should(?)</em> remain in the container. ALWAYS copy your files to the mounted volume so it will persist after exiting the container.    
+```bash
+docker start -ai linear-attention-acceleration-processor-chipyard-1
+```
+
+### Notes: 
+1. Your Scala files are copied to /opt/chipyard/generators/chipyard/src/main/scala/
+2. Your tests are copied to /opt/chipyard/tests
+3. To compile the test: 
+```bash
+cd /opt/chipyard/tests && mkdir build
+cd build && cmake .. 
+make
+```
+4. To run your test
+```bash
+cd /opt/chipyard/sims/verilator
+make CONFIG=MyMultRocketConfig run-binary-debug BINARY=/opt/chipyard/tests/build/mymult.riscv
+```
+5. If you feel lazy, run the following automation script that does steps 3 and 4 for you.
+```bash
+bash /opt/mounted-chipyard/automation-scripts/run-mymult.sh
+```
+
+# Workflow V1 - Pulling the Build LARP Container and Running it Using Docker Commands  
 ## Chipyard container
 
 The image `yanfuou2/senior-design:chipyard-v1` has Chipyard and the `riscv-tools` toolchain installed under `/opt/chipyard`. An interactive shell sources `/opt/chipyard/env.sh`, which activates that environment.
@@ -15,7 +49,13 @@ docker pull yanfuou2/senior-design:chipyard-v1
 Start a shell. The open-file limit is required by the Verilator build.
 
 ```bash
-docker run -it --ulimit nofile=1048576:1048576 --rm yanfuou2/senior-design:chipyard-v1
+docker run -it --ulimit nofile=1048576:1048576 yanfuou2/senior-design:chipyard-v1
+```
+
+Run the container with the volume mounted
+
+```bash
+docker run -it -v ./chipyard:/opt/mounted-chipyard/ --ulimit nofile=1048576:1048576 yanfuou2/senior-design:chipyard-v1
 ```
 
 ## Validate the toolchain

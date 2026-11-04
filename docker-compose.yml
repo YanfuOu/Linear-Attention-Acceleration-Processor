@@ -1,0 +1,24 @@
+services:
+  chipyard:
+    image: yanfuou2/senior-design:chipyard-v1
+    stdin_open: true
+    tty: true
+    working_dir: /opt/chipyard
+    ulimits:
+      nofile:
+        soft: 1048576
+        hard: 1048576
+    volumes:
+      - ./chipyard:/opt/mounted-chipyard
+    # Copy the mounted generators into the image tree, then keep the same
+    # interactive shell that `docker run -it` would open (sources env.sh).
+    command:
+      - bash
+      - -c
+      - |
+        cp -r /opt/mounted-chipyard/generators/* /opt/chipyard/generators/ &&
+        cp -r /opt/mounted-chipyard/tests/* /opt/chipyard/tests/ &&
+        echo "Your modified Scala files are in /opt/chipyard/generators/chipyard/src/main/scala/" &&
+        echo " and tests are in /opt/chipyard/tests/" &&
+        echo " run this to automate test compiling and running: bash /opt/mounted-chipyard/automation-scripts/run-mymult.sh" &&
+        exec bash -i
