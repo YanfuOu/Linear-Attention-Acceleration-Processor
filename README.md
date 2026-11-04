@@ -32,6 +32,10 @@ make CONFIG=MyMultRocketConfig run-binary-debug BINARY=/opt/chipyard/tests/build
 ```bash
 bash /opt/mounted-chipyard/automation-scripts/run-mymult.sh
 ```
+6. The outer product unit (state update S = decay*S + k⊗v, query o = S^T q) has its own test and automation script, same pattern:
+```bash
+bash /opt/mounted-chipyard/automation-scripts/run-outer-product-unit.sh
+```
 
 # Workflow V1 - Pulling the Build LARP Container and Running it Using Docker Commands  
 ## Chipyard container

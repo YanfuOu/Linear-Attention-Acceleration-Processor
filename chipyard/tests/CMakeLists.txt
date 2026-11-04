@@ -92,13 +92,14 @@ add_executable(triple-chiplet triple-chiplet.c)
 add_executable(mymult mymult.c)
 add_executable(myvec myvec.c)
 add_executable(myvec-matvec myvec-matvec.c)
+add_executable(outer-product-unit outer_product_unit.c)
 
 # Work around the broken _REENT_SMALL exit path in the GCC 16 nano Newlib
 # shipped by the conda toolchain.
 set(NANO_TEST_TARGETS
     pwm blkdev accum charcount nic-loopback big-blkdev pingd
     streaming-passthrough streaming-fir nvdla spiflashread spiflashwrite
-    fft gcd hello mt-hello symmetric ctc-test multi-ctc-test triple-chiplet mymult myvec myvec-matvec)
+    fft gcd hello mt-hello symmetric ctc-test multi-ctc-test triple-chiplet mymult myvec myvec-matvec outer-product-unit)
 foreach(target IN LISTS NANO_TEST_TARGETS)
     set_property(TARGET ${target} APPEND PROPERTY SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/atexit-workaround.c)
@@ -150,6 +151,7 @@ add_dump_target(triple-chiplet)
 add_dump_target(mymult)
 add_dump_target(myvec)
 add_dump_target(myvec-matvec)
+add_dump_target(outer-product-unit)
 
 
 # Add custom command to generate spiflash.img from spiflash.py
