@@ -118,14 +118,25 @@ class OuterProductUnit(params: OuterProductUnitParams, beatBytes: Int)(implicit 
     // One column of the UPDATE recurrence per cycle while the sub-FSM is
     // active. Takes priority over the single-cycle dispatch below so a
     // fresh CMD write can't interrupt an in-flight UPDATE.
+    //
+    // The whole point of doing this column-at-a-time instead of
+    // element-at-a-time: every `.map(i => ...)` below over `0 until lanes`
+    // is lanes independent multiplier units, wired side by side, all
+    // evaluated in the SAME cycle -- not a software loop. Each column-cycle
+    // does lanes multiplies for the decay scale, lanes multiplies (feeding
+    // an adder tree) for the dot product, and lanes more multiplies for
+    // the final outer-product add -- 3*lanes products computed
+    // simultaneously per cycle, not one at a time. That's what turns a
+    // lanes^2-element state update into ~lanes cycles instead of lanes^2:
+    // lanes columns, each one fully parallel across its lanes elements.
     when (updSt === uCol) {
-      val sbar = VecInit((0 until lanes).map(i => fixedMulDecay(decayVec(i), state(i)(col))))
-      val dotWide = (0 until lanes).map(i => mulTrunc(sbar(i).asSInt, eVec(i).asSInt)).reduce(_ + _)
+      val sbar = VecInit((0 until lanes).map(i => fixedMulDecay(decayVec(i), state(i)(col)))) // lanes decay-multiplies, parallel
+      val dotWide = (0 until lanes).map(i => mulTrunc(sbar(i).asSInt, eVec(i).asSInt)).reduce(_ + _) // lanes multiplies + adder tree, parallel
       val dot   = dotWide(elemBits - 1, 0) // Sbar_t^T e_t, element [col]
       val sigma = (zVec(col).asSInt - dot.asSInt).asUInt(elemBits - 1, 0) // z_t - Sbar_t^T e_t
 
       for (i <- 0 until lanes) {
-        state(i)(col) := sbar(i) + mulTrunc(sigma.asSInt, kVec(i).asSInt) // Sbar + k_t sigma^T, col `col`
+        state(i)(col) := sbar(i) + mulTrunc(sigma.asSInt, kVec(i).asSInt) // lanes outer-product multiplies, parallel; col `col`
       }
 
       when (col === (lanes - 1).U) {
