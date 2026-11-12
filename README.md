@@ -1,6 +1,30 @@
 # Linear-Attention-Acceleration-Processor
 
-# Workflow V2 - Running LARP Container Using docker compose 
+# Workflow V3 - Running LARP Container Using docker compose on Deveietti's Server
+
+Step 1: Connect to Penn VPN & SSH into the Server
+```bash
+ssh larp@acghaswell16.seas.upenn.edu
+```
+You can also set up SSH in VSCode
+
+Step 2: Run the container
+```bash
+cd /home/larp/LARP
+sudo su
+docker start -ai larp-chipyard-1
+```
+-a = --attatch, attatches your terminal to container's stdout&stderror
+-i = --interactive, connects your keyborad to the container's stdin
+
+If you need to see what the name of the stopped container is called, run 
+```bash
+docker compose images
+```
+
+Everything else is the same as Workflow V2. 
+
+# Workflow V2 - Running LARP Container Using docker compose on Local Setup
 Goal: Automate the manual docker volume attatchment and docker runs with docker compse! Additionally, all the docker file copying from the volume mountshould be automated. Docker container should persist created files after exit and present after resuming. Everything should be setup using command in Step 1 and ready to go by running command in Step 2. 
 
 Step 1: Create the LARP container defined in the docker-compose.yml file, but it does not start it. You should only need to run step 1 once to set everything up. 
