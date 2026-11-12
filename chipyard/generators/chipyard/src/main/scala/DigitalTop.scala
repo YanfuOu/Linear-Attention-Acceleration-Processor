@@ -40,6 +40,7 @@ class DigitalTop(implicit p: Parameters) extends ChipyardSystem
 
   with chipyard.example.CanHavePeripheryMyMult
   with chipyard.example.CanHavePeripheryMyVec
+  with chipyard.example.CanHavePeripheryOuterProductUnit
 {
   override lazy val module = new DigitalTopModule(this)
 }
